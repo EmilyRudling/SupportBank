@@ -1,50 +1,52 @@
 package training.supportbank;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDateTime;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String args[]) {
+        Bank bank = new Bank();
         System.out.println("Reading info in CSV file.");
         //Goes through the CSV file line by line and creates the transactions
         String csvFile = "/Users/erudling/IdeaProjects/SupportBank/Transactions2014.csv"; //location of the file
         String line = "";
-        Person[] listOfPeople;
-        Transaction[] listOfPayments;
         try {
             BufferedReader br = new BufferedReader(new FileReader(csvFile));
+            br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] transactionInfo = line.split(",");
                 BigDecimal amount = new BigDecimal(transactionInfo[4]); //converts the String into a BigDecimal
                 Transaction newTransaction = new Transaction(transactionInfo[0], transactionInfo[1], transactionInfo[2], transactionInfo[3], amount);
-                Bank.AddTransaction(newTransaction); //adds a new transaction to the bank
+                bank.AddTransaction(newTransaction); //adds a new transaction to the bank
                 Person newPerson = new Person(transactionInfo[1]);
-                Bank.AddAccount(newPerson); //creates the new person to the accounts list
+                bank.AddAccount(newPerson); //creates the new person to the accounts list
                 Person newPerson2 = new Person(transactionInfo[2]);
-                Bank.AddAccount(newPerson2); //creates the new person to the accounts list
+                bank.AddAccount(newPerson2); //creates the new person to the accounts list
                 //this will be checked, and added if it does not already exist as a person
             }
         }
         catch (IOException e) { System.out.println("Failed to read CSV file provided."); }
         while(1 == 1){
-            System.out.println("Enter 'List All' to output all names and money owed.");
-            System.out.println("Enter 'List Account' to output all the transactions for a specific account.");
-            System.out.println("Enter 'Exit' to exit.");
+            System.out.println("1 -- 'List All' to output all names and money owed.");
+            System.out.println("2 -- 'List Account' to output all the transactions for a specific account.");
+            System.out.println("3 -- 'Exit' to exit.");
             Scanner scanner = new Scanner(System.in);
             String input = scanner.next();
             switch(input){
-                case "List All":
-                    Bank.ListAll();
+                case "1":
+                    bank.ListAll();
                     break;
-                case "List Account":
-                    Bank.ListAccount();
+                case "2":
+                    bank.ListAccount();
                     break;
-                case "Exit":
+                case "3":
                     System.exit(0);
                     break;
                 default:
@@ -55,21 +57,47 @@ public class Main {
 }
 
 class Bank {
-    Person[] Accounts;
-    Transaction[] Payments;
-    static void AddTransaction(Transaction transaction){
-        Transaction.add(transaction);
+    ArrayList<Person> Accounts = new ArrayList<Person>();
+    ArrayList<Transaction> Payments = new ArrayList<Transaction>();
+    void AddTransaction(Transaction transaction){
+        Payments.add(transaction);
     }
-    static void AddAccount(Person person){
+    void AddAccount(Person person){
         //checks to see if the account already exists and adds it if it does not
+        boolean accountExists = false;
+        for (int i = 0; i < Accounts.size(); i++) {
+            if (Accounts.get(i).Name == person.Name){
+                accountExists = true;
+            }
+        }
+        if (accountExists == false){
+            //if the name is not found in the search, it is added to the list of accounts
+            Accounts.add(person);
+        }
     }
-    static void ListAll(){
-        //list all - outputs all the names and money they owe
-        //print all transaction objects
+    void ListAll(){
+        for (int i = 0; i < Payments.size(); i++) { //lists all transactions
+            System.out.println(Payments.get(i));
+        }
     }
-    static void ListAccount(){
-        //list [account] - prints all of the transactions for [account] chosen
+    void ListAccount(){ //list [account] - prints all of the transactions for [account] chosen
+        System.out.println("Enter the name of the account you would like to list details of.");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.next();
+
         //print all transaction objects containing an account name
+        boolean relevant = false;
+        for (int i = 0; i < Accounts.size(); i++) {
+            if (Payments.get(i).To.equals(input)){
+                relevant = true;
+            }
+            if (Payments.get(i).From.equals(input)){
+                relevant = true;
+            }
+            if (relevant == true){
+                System.out.println(Payments.get(i));
+            }
+        }
     }
 }
 
