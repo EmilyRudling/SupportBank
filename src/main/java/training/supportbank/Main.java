@@ -15,10 +15,11 @@ public class Main {
     public static void main(String args[]) {
         LOGGER.info("Start of info Log");
         Bank bank = new Bank();
-        System.out.println("Reading info in file provided.");
+        LOGGER.info("Reading info in file provided.");
         //Goes through the CSV file line by line and creates the transactions
-        String csvFile = "/Users/erudling/IdeaProjects/SupportBank/Transactions2014.csv"; //location of the file
-        String csvFile2 = "/Users/erudling/IdeaProjects/SupportBank/DodgyTransactions2015.csv"; //location of the file
+        String file2013 = "/Users/erudling/IdeaProjects/SupportBank/Transactions2013.json";
+        String file2014 = "/Users/erudling/IdeaProjects/SupportBank/Transactions2014.csv";
+        String file2015 = "/Users/erudling/IdeaProjects/SupportBank/DodgyTransactions2015.csv";
         String line = "";
         try {
             boolean valid = true; //this will be used to check if the information in the specific transaction is formatted correctly
@@ -26,8 +27,7 @@ public class Main {
             LocalDate date = null;
             BigDecimal amount = null;
             int currentLine = 2;
-            BufferedReader br = new BufferedReader(new FileReader(csvFile2));
-            LOGGER.info("Processing CSV file started.");
+            BufferedReader br = new BufferedReader(new FileReader(file2014));
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] transactionInfo = line.split(",");
@@ -55,7 +55,7 @@ public class Main {
                 currentLine++;
             }
         }
-        catch (IOException e) { System.out.println("Failed to read CSV file provided."); }
+        catch (IOException e) { LOGGER.info("Failed to read file provided, is it in the wrong format?"); }
         while(true){
             System.out.println("1 -- 'List All' to output all names and money owed.");
             System.out.println("2 -- 'List Account' to output all the transactions for a specific account.");
