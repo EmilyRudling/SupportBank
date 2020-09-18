@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,19 +21,38 @@ public class Main {
         String csvFile2 = "/Users/erudling/IdeaProjects/SupportBank/DodgyTransactions2015.csv"; //location of the file
         String line = "";
         try {
+            boolean valid = true; //this will be used to check if the information in the specific transaction is formatted correctly
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate date = null;
+            BigDecimal amount = null;
+            int currentLine = 2;
             BufferedReader br = new BufferedReader(new FileReader(csvFile2));
             LOGGER.info("Processing CSV file started.");
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] transactionInfo = line.split(",");
-                BigDecimal amount = new BigDecimal(transactionInfo[4]); //converts the String into a BigDecimal
-                Transaction newTransaction = new Transaction(transactionInfo[0], transactionInfo[1], transactionInfo[2], transactionInfo[3], amount);
-                bank.addTransaction(newTransaction); //adds a new transaction to the bank
-                Person newPerson = new Person(transactionInfo[1]);
-                bank.addAccount(newPerson); //creates the new person to the accounts list
-                Person newPerson2 = new Person(transactionInfo[2]);
-                bank.addAccount(newPerson2); //creates the new person to the accounts list
-                //this will be checked, and added if it does not already exist as a person
+                try{
+                    date = LocalDate.parse(transactionInfo[0], formatter);//converts the String into a date
+                } catch (Exception e) {
+                    LOGGER.info("The date on line " + currentLine + " is in the wrong format, transaction skipped.");
+                    valid = false;
+                }
+                try{
+                    amount = new BigDecimal(transactionInfo[4]); //converts the String into a BigDecimal
+                } catch (Exception e) {
+                    LOGGER.info("The money on line " + currentLine + " is in the wrong format, transaction skipped.");
+                    valid = false;
+                }
+                if (valid){
+                    Transaction newTransaction = new Transaction(date, transactionInfo[1], transactionInfo[2], transactionInfo[3], amount);
+                    bank.addTransaction(newTransaction); //adds a new transaction to the bank
+                    Person newPerson = new Person(transactionInfo[1]);
+                    bank.addAccount(newPerson); //creates the new person to the accounts list
+                    Person newPerson2 = new Person(transactionInfo[2]);
+                    bank.addAccount(newPerson2); //creates the new person to the accounts list
+                    //this will be checked, and added if it does not already exist as a person
+                }
+                currentLine++;
             }
         }
         catch (IOException e) { System.out.println("Failed to read CSV file provided."); }
@@ -113,12 +134,12 @@ class Person {
 }
 
 class Transaction {
-    String date;
+    LocalDate date;
     String to;
     String from;
     String narrative;
     BigDecimal amount;
-    public Transaction (String date, String to, String from, String narrative, BigDecimal amount){
+    public Transaction (LocalDate date, String to, String from, String narrative, BigDecimal amount){
         this.date = date;
         this.to = to;
         this.from = from;
