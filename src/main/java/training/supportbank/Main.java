@@ -76,18 +76,19 @@ class Bank {
         }
     }
     void ListAll(){
+        System.out.println("Date, To, From, Narrative, Amount:");
         for (int i = 0; i < Payments.size(); i++) { //lists all transactions
-            System.out.println(Payments.get(i));
+            System.out.println(Payments.get(i).Date + ", " + Payments.get(i).To + ", " + Payments.get(i).From + ", " + Payments.get(i).Narrative + ", £" + Payments.get(i).Amount);
         }
     }
     void ListAccount(){ //list [account] - prints all of the transactions for [account] chosen
         System.out.println("Enter the name of the account you would like to list details of.");
         Scanner scanner = new Scanner(System.in);
         String input = scanner.next();
-
-        //print all transaction objects containing an account name
         boolean relevant = false;
-        for (int i = 0; i < Accounts.size(); i++) {
+        System.out.println("Date, To, From, Narrative, Amount:");
+        for (int i = 0; i < Payments.size(); i++) { //print all transaction objects containing an account name
+            relevant = false;
             if (Payments.get(i).To.equals(input)){
                 relevant = true;
             }
@@ -95,7 +96,7 @@ class Bank {
                 relevant = true;
             }
             if (relevant == true){
-                System.out.println(Payments.get(i));
+                System.out.println(Payments.get(i).Date + ", " + Payments.get(i).To + ", " + Payments.get(i).From + ", " + Payments.get(i).Narrative + ", £" + Payments.get(i).Amount);
             }
         }
     }
