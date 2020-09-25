@@ -1,4 +1,7 @@
 package training.supportbank;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
@@ -20,14 +23,16 @@ public class Main {
         String file2013 = "/Users/erudling/IdeaProjects/SupportBank/Transactions2013.json";
         String file2014 = "/Users/erudling/IdeaProjects/SupportBank/Transactions2014.csv";
         String file2015 = "/Users/erudling/IdeaProjects/SupportBank/DodgyTransactions2015.csv";
+        String path = "aaaaaaà";
         String line = "";
+
         try {
             boolean valid = true; //this will be used to check if the information in the specific transaction is formatted correctly
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate date = null;
             BigDecimal amount = null;
             int currentLine = 2;
-            BufferedReader br = new BufferedReader(new FileReader(file2014));
+            BufferedReader br = new BufferedReader(new FileReader(path));
             br.readLine();
             while ((line = br.readLine()) != null) {
                 String[] transactionInfo = line.split(",");
